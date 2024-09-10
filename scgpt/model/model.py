@@ -12,7 +12,7 @@ from torch.distributions import Bernoulli
 from tqdm import trange
 
 try:
-    from flash_attn.flash_attention import FlashMHA
+    from flash_attn.modules import MHA as FlashMHA
 
     flash_attn_available = True
 except ImportError:
