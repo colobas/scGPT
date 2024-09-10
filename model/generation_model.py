@@ -66,7 +66,7 @@ class TransformerGenerator(nn.Module):
             raise ValueError(f"Unknown cell_emb_style: {cell_emb_style}")
         if use_fast_transformer:
             try:
-                from flash_attn.flash_attention import FlashMHA
+                from flash_attn.modules import MHA as FlashMHA
             except ImportError:
                 import warnings
 
