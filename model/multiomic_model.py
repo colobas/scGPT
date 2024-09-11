@@ -12,7 +12,7 @@ from torch.distributions import Bernoulli
 from tqdm import trange
 
 try:
-    from flash_attn.modules.mha import MHA as FlashMHA
+    from flash_attn.flash_attention import FlashMHA
 except ImportError:
     import warnings
 
@@ -671,7 +671,8 @@ class FlashTransformerEncoderLayer(nn.Module):
         self.self_attn = FlashMHA(
             embed_dim=d_model,
             num_heads=nhead,
-            dropout=dropout,
+            batch_first=batch_first,
+            attention_dropout=dropout,
             **factory_kwargs,
         )
         # Implementation of Feedforward model
