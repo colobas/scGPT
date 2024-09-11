@@ -637,7 +637,6 @@ class FlashTransformerEncoderLayer(nn.Module):
         self.self_attn = FlashMHA(
             embed_dim=d_model,
             num_heads=nhead,
-            batch_first=batch_first,
             attention_dropout=dropout,
             **factory_kwargs,
         )
