@@ -637,7 +637,7 @@ class FlashTransformerEncoderLayer(nn.Module):
         self.self_attn = FlashMHA(
             embed_dim=d_model,
             num_heads=nhead,
-            attention_dropout=dropout,
+            dropout=dropout,
             **factory_kwargs,
         )
         # Version compatibility workaround
