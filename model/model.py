@@ -12,7 +12,7 @@ from torch.distributions import Bernoulli
 from tqdm import trange
 
 try:
-    from flash_attn.flash_attention import FlashMHA
+    from scgpt.model.flash_mha import FlashMHA
 
     flash_attn_available = True
 except ImportError:
