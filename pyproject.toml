@@ -27,7 +27,11 @@ dependencies = [
     "scib>=1.0.3",
     "cell-gears<0.0.3",
     "orbax<0.1.8",
-    "flash-attn"
+]
+
+[project.optional-dependencies]
+flash = [
+  "flash-attn"
 ]
 
 [project.urls]
