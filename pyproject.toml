@@ -27,7 +27,7 @@ dependencies = [
     "scib>=1.0.3",
     "cell-gears<0.0.3",
     "orbax<0.1.8",
-    "rust-vocab",
+    "rust-vocab<=0.1.2"
 ]
 
 [project.optional-dependencies]
@@ -43,5 +43,3 @@ homepage = "https://github.com/bowang-lab/scGPT"
 [tool.setuptools.packages.find]
 where = ["."]
 
-[tool.uv.sources]
-rust-vocab = { git = "https://github.com/colobas/rust-vocab.git" }
