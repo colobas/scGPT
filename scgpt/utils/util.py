@@ -13,7 +13,6 @@ import pandas as pd
 from anndata import AnnData
 from matplotlib import pyplot as plt
 from matplotlib import axes
-from IPython import get_ipython
 
 from .. import logger
 
@@ -61,6 +60,7 @@ def category_str2int(category_strs: List[str]) -> List[int]:
 def isnotebook() -> bool:
     """check whether excuting in jupyter notebook."""
     try:
+        from IPython import get_ipython
         shell = get_ipython().__class__.__name__
         if shell == "ZMQInteractiveShell":
             return True  # Jupyter notebook or qtconsole

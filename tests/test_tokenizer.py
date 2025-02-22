@@ -46,3 +46,11 @@ def test_gene_vocab_pad_token():
 def test_get_default_gene_vocab():
     gene_vocab = get_default_gene_vocab()
     assert gene_vocab["A12M1"] == 0
+
+
+if __name__ == "__main__":
+    test_gene_vocab()
+    test_gene_vocab_from_dict()
+    test_gene_vocab_from_file()
+    test_gene_vocab_pad_token()
+    test_get_default_gene_vocab()
