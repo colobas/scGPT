@@ -396,7 +396,7 @@ class LinearExprDecoder(nn.Module):
             nn.Identity() if activation is None else getattr(nn, activation)()
         )
         if explicit_zero_prob:
-            self.decode_prob = nn.Sequetial(
+            self.decode_prob = nn.Sequential(
                 nn.Linear(d_model, 1),
                 nn.Sigmoid()  # Probability of being zero
             )
