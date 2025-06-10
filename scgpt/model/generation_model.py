@@ -42,6 +42,7 @@ class TransformerGenerator(nn.Module):
         n_input_bins: Optional[int] = 0,
         cell_emb_style: str = "cls",
         mvc_decoder_style: str = "inner product",
+        decoder_type: str = "affine",
         decoder_activation: Optional[str] = None,
         decoder_adaptive_bias: bool = False,
         ecs_threshold: float = 0.3,
@@ -106,13 +107,19 @@ class TransformerGenerator(nn.Module):
             )
             self.transformer_encoder = TransformerEncoder(encoder_layers, nlayers)
 
-        # self.decoder = nn.Linear(d_model, 1)
-        self.decoder = AffineExprDecoder(
-            d_model,
-            explicit_zero_prob=explicit_zero_prob,
-            activation=decoder_activation,
-            adaptive_bias=decoder_adaptive_bias,
-        )
+        if decoder_type == "linear":
+            self.decoder = LinearExprDecoder(
+                d_model,
+                explicit_zero_prob=explicit_zero_prob,
+                activation=decoder_activation,
+            )
+        else:
+            self.decoder = AffineExprDecoder(
+                d_model,
+                explicit_zero_prob=explicit_zero_prob,
+                activation=decoder_activation,
+                adaptive_bias=decoder_adaptive_bias,
+            )
         self.cls_decoder = ClsDecoder(d_model, n_cls, nlayers=nlayers_cls)
         if do_mvc:
             self.mvc_decoder = MVCDecoder(
@@ -371,6 +378,43 @@ class GeneEncoder(nn.Module):
         x = self.embedding(x)  # (batch, seq_len, embsize)
         x = self.enc_norm(x)
         return x
+
+class LinearExprDecoder(nn.Module):
+    def __init__(self, d_model: int, explicit_zero_prob: bool = False, activation: Optional[str] = None):
+        """
+        Predict the expression value of each gene in a linear form of Ax.
+
+        Args:
+            d_model: The embedding dimension.
+            explicit_zero_prob: If True, predict the probability of each gene being
+                zero.
+        """
+        super().__init__()
+        self.explicit_zero_prob = explicit_zero_prob
+        self.decode_expr = nn.Sequential(
+            nn.Linear(d_model, 1),
+            nn.Identity() if activation is None else getattr(nn, activation)()
+        )
+        if explicit_zero_prob:
+            self.decode_prob = nn.Sequetial(
+                nn.Linear(d_model, 1),
+                nn.Sigmoid()  # Probability of being zero
+            )
+
+    def forward(self, x: Tensor) -> Tensor:
+        """
+        Args:
+            x: Tensor, shape [batch_size, seq_len, embsize]
+
+        Returns:
+            output Tensor of shape [batch_size, seq_len]
+        """
+        output = dict(
+            pred=self.decode_expr(x).squeeze(-1)  # (batch, seq_len)
+        )
+        if self.explicit_zero_prob:
+            output["zero_probs"] = self.decode_prob(x).squeeze(-1)  # (batch, seq_len)
+        return output
 
 
 class AffineExprDecoder(nn.Module):
