@@ -42,7 +42,7 @@ class TransformerGenerator(nn.Module):
         n_input_bins: Optional[int] = 0,
         cell_emb_style: str = "cls",
         mvc_decoder_style: str = "inner product",
-        decoder_type: str = "affine",
+        decoder_type: str = "tiny",
         decoder_activation: Optional[str] = None,
         decoder_adaptive_bias: bool = False,
         ecs_threshold: float = 0.3,
@@ -107,8 +107,8 @@ class TransformerGenerator(nn.Module):
             )
             self.transformer_encoder = TransformerEncoder(encoder_layers, nlayers)
 
-        if decoder_type == "linear":
-            self.decoder = LinearExprDecoder(
+        if decoder_type == "tiny":
+            self.decoder = TinyExprDecoder(
                 d_model,
                 explicit_zero_prob=explicit_zero_prob,
                 activation=decoder_activation,
@@ -227,7 +227,7 @@ class TransformerGenerator(nn.Module):
             src, processed_values, input_pert_flags, src_key_padding_mask
         )
         output = {}
-        if isinstance(self.decoder, LinearExprDecoder):
+        if isinstance(self.decoder, TinyExprDecoder):
             mlm_output = self.decoder(transformer_output)
         else:
             mlm_output = self.decoder(transformer_output, values)
@@ -383,7 +383,7 @@ class GeneEncoder(nn.Module):
         x = self.enc_norm(x)
         return x
 
-class LinearExprDecoder(nn.Module):
+class TinyExprDecoder(nn.Module):
     def __init__(self, d_model: int, explicit_zero_prob: bool = False, activation: Optional[str] = None):
         """
         Predict the expression value of each gene in a linear form of Ax.
@@ -396,6 +396,8 @@ class LinearExprDecoder(nn.Module):
         super().__init__()
         self.explicit_zero_prob = explicit_zero_prob
         self.decode_expr = nn.Sequential(
+            nn.Linear(d_model, d_model),
+            nn.SiLU(),
             nn.Linear(d_model, 1),
             nn.Identity() if activation is None else getattr(nn, activation)()
         )
