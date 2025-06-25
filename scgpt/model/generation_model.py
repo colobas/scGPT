@@ -397,9 +397,9 @@ class TinyExprDecoder(nn.Module):
         self.explicit_zero_prob = explicit_zero_prob
         self.decode_expr = nn.Sequential(
             nn.Linear(d_model, d_model),
-            nn.SiLU(),
+            nn.GeLU(),
             nn.Linear(d_model, d_model),
-            nn.SiLU(),
+            nn.GeLU(),
             nn.Linear(d_model, 1),
             nn.Identity() if activation is None else getattr(nn, activation)()
         )

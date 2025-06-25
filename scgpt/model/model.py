@@ -87,7 +87,12 @@ class TransformerModel(nn.Module):
 
         # Value Encoder, NOTE: the scaling style is also handled in _encode method
         if input_emb_style == "continuous":
-            self.value_encoder = ContinuousValueEncoder(d_model, dropout)
+            #self.value_encoder = ContinuousValueEncoder(d_model, dropout)
+            self.value_encoder = nn.Sequential(
+                nn.Linear(1, d_model, bias=True),
+                nn.LayerNorm(d_model),  # Moved before activation
+                nn.GeLU(),  # Changed to SiLU
+            )
         elif input_emb_style == "category":
             assert n_input_bins > 0
             self.value_encoder = CategoryValueEncoder(
