@@ -91,7 +91,7 @@ class TransformerModel(nn.Module):
             self.value_encoder = nn.Sequential(
                 nn.Linear(1, d_model, bias=True),
                 nn.LayerNorm(d_model),  # Moved before activation
-                nn.GeLU(),  # Changed to SiLU
+                nn.SiLU(),  # Changed to SiLU
             )
         elif input_emb_style == "category":
             assert n_input_bins > 0
